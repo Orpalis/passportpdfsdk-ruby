@@ -1,7 +1,7 @@
 =begin
 #PassportPDF API
 
-#      Introduction:    PassportPDF API is a REST API that lets you perform complex operations on documents and images easily.  You may consume the API by using our.NET SDK (other platforms / languages are soon to come), or any REST client by sending your requests to the appropriate endpoints.   A list of all the available endpoints can be found on the API reference page at https://passportpdfapi.com/references/api/index.html        Authentication:    Each available operation has a predefined cost, expressed as a number of tokens.  These tokens are deducted from your \"passport,\" which has a unique identifier that acts as an API key. This key is, therefore, required to be provided with each request for the latter to be honored(except if the operation does not have a cost, typically when you request a simple data with a GET).  Your key must be included in the header of the request, under the name \"X-PassportPdf-API-Key.\"  If you are using the.NET SDK, you can either set your key in the ApiKey property of your API instance(PdfApi or ImageApi, for example) or set it globally in the GlobalConfiguration instance if you want to set it once for the whole life cycle of your application.          Communication with the API:    All the available actions are listed on the API reference page, as previously mentioned.  There are several different controllers, i.e., routes, which categorize the actions.For example, you may use the PDF controller(\"/api/pdf\" route) to perform PDF - related operations, and the Image controller(\"/api/image\") for images.  Each action defines what kind of parameters(if any) is expected, and what kind of response is served.Parameters and responses are represented using data models, or \"schemas,\" and are listed in the \"Schemas\" section of the reference.   Parameters and response models of a given action are both prefixed by the controller name, the action name, and \"Parameters\" / \"Response,\" e.g. \"api/pdf/reduce\" respectively receives and serves a PdfReduceParameters and PdfReduceResponse models.  Using the .NET SDK, you will find the objects to interact with the different controllers in the PassportPDF.Api namespace and all the schemas in the PassportPDF.Model namespace.        Processing documents:    Each document manipulation starts with importing the file onto the API.  The LoadDocument action of the PDF controller lets you import your document as a PDF.  Note that the GetPDFImportSupportedFileExtensions action of the same controller will let you know all the different types of files that you may import as a PDF. LoadDocument responds with a JSON-serialized PdfLoadDocumentResponse model, which contains a \"FileId\" property.This identifier is required for the API to know about your document for further manipulations, hence the presence of a \"FileId\" property in the PdfReduceParameters schema (and many other parameters schemas). To download the changes made to a file, you need, of course, to download the new version of the file from the API.  To save your document as a PDF, you will need to use the SaveDocument action of the PDF controller and provide a PdfSaveDocumentParameters data model that contains the identifier of your file.        Errors:    Conventional HTTP response codes are used to indicate the success or failure of an API request.   The Error data model also defines some information about an error that occurred on the API.   Each response model has an Error in its definition, and its sole existence in the serialized response - which should thus always be checked - indicates that something went wrong.  Among the information given by the Error schema, \"ResultCode\" specifies a value of the \"PassportPDFStatus\" enumeration, that defines a first level of error information. \"InternalErrorId\" defines a unique identifier for the error, which comes very handy for us to troubleshoot any issue you may encounter quickly.        Efficiency considerations:    Multipart upload/download is available and lets you directly stream a file to/from the API.  In the PDF controller, LoadDocument/LoadDocumentMultipart and SaveDocument/SaveDocumentToFile may be used to upload/download a document using respectively binary data serialization and streaming multipart HTTP requests.  The second approach should be favored when dealing with large files, as it will be much more efficient in that context.  
+#Another brick in the cloud
 
 The version of the OpenAPI document: 1.0.1
 
@@ -1937,6 +1937,68 @@ module OpenapiClient
       return data, status_code, headers
     end
 
+    # Removes text (all text or only invisible one) from a previously uploaded PDF.
+    # @param pdf_remove_text_parameters [PdfRemoveTextParameters] A PdfRemoveTextParameters object specifying the parameters of the action.
+    # @param [Hash] opts the optional parameters
+    # @return [PdfRemoveTextResponse]
+    def remove_text(pdf_remove_text_parameters, opts = {})
+      data, _status_code, _headers = remove_text_with_http_info(pdf_remove_text_parameters, opts)
+      data
+    end
+
+    # Removes text (all text or only invisible one) from a previously uploaded PDF.
+    # @param pdf_remove_text_parameters [PdfRemoveTextParameters] A PdfRemoveTextParameters object specifying the parameters of the action.
+    # @param [Hash] opts the optional parameters
+    # @return [Array<(PdfRemoveTextResponse, Integer, Hash)>] PdfRemoveTextResponse data, response status code and response headers
+    def remove_text_with_http_info(pdf_remove_text_parameters, opts = {})
+      if @api_client.config.debugging
+        @api_client.config.logger.debug 'Calling API: PDFApi.remove_text ...'
+      end
+      # verify the required parameter 'pdf_remove_text_parameters' is set
+      if @api_client.config.client_side_validation && pdf_remove_text_parameters.nil?
+        fail ArgumentError, "Missing the required parameter 'pdf_remove_text_parameters' when calling PDFApi.remove_text"
+      end
+      # resource path
+      local_var_path = '/api/pdf/RemoveText'
+
+      # query parameters
+      query_params = opts[:query_params] || {}
+
+      # header parameters
+      header_params = opts[:header_params] || {}
+      # HTTP header 'Accept' (if needed)
+      header_params['Accept'] = @api_client.select_header_accept(['text/plain', 'application/json', 'text/json'])
+      # HTTP header 'Content-Type'
+      header_params['Content-Type'] = @api_client.select_header_content_type(['application/json-patch+json', 'application/json', 'text/json', 'application/*+json'])
+
+      # form parameters
+      form_params = opts[:form_params] || {}
+
+      # http body (model)
+      post_body = opts[:body] || @api_client.object_to_http_body(pdf_remove_text_parameters) 
+
+      # return_type
+      return_type = opts[:return_type] || 'PdfRemoveTextResponse' 
+
+      # auth_names
+      auth_names = opts[:auth_names] || []
+
+      new_options = opts.merge(
+        :header_params => header_params,
+        :query_params => query_params,
+        :form_params => form_params,
+        :body => post_body,
+        :auth_names => auth_names,
+        :return_type => return_type
+      )
+
+      data, status_code, headers = @api_client.call_api(:POST, local_var_path, new_options)
+      if @api_client.config.debugging
+        @api_client.config.logger.debug "API called: PDFApi#remove_text\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
+      end
+      return data, status_code, headers
+    end
+
     # Reorders pages of a previously uploaded document.
     # @param pdf_reorder_pages_parameters [PdfReorderPagesParameters] A PdfReorderPagesParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
@@ -2123,7 +2185,7 @@ module OpenapiClient
       return data, status_code, headers
     end
 
-    # Saves a previously uploaded document as JPEG.
+    # Saves a previously uploaded document as JPEG, and sends the file data in a JSON-serialized object.
     # @param pdf_save_as_jpeg_parameters [PdfSaveAsJPEGParameters] A PdfSaveAsJPEGParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [PdfSaveAsJPEGResponse]
@@ -2132,7 +2194,7 @@ module OpenapiClient
       data
     end
 
-    # Saves a previously uploaded document as JPEG.
+    # Saves a previously uploaded document as JPEG, and sends the file data in a JSON-serialized object.
     # @param pdf_save_as_jpeg_parameters [PdfSaveAsJPEGParameters] A PdfSaveAsJPEGParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [Array<(PdfSaveAsJPEGResponse, Integer, Hash)>] PdfSaveAsJPEGResponse data, response status code and response headers
@@ -2185,7 +2247,7 @@ module OpenapiClient
       return data, status_code, headers
     end
 
-    # Saves a previously uploaded document as JPEG.
+    # Saves a previously uploaded document as JPEG, and streams the file binary data to the response (this is the most efficient download method).
     # @param pdf_save_as_jpeg_parameters [PdfSaveAsJPEGParameters] A PdfSaveAsJPEGParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [File]
@@ -2194,7 +2256,7 @@ module OpenapiClient
       data
     end
 
-    # Saves a previously uploaded document as JPEG.
+    # Saves a previously uploaded document as JPEG, and streams the file binary data to the response (this is the most efficient download method).
     # @param pdf_save_as_jpeg_parameters [PdfSaveAsJPEGParameters] A PdfSaveAsJPEGParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [Array<(File, Integer, Hash)>] File data, response status code and response headers
@@ -2247,7 +2309,7 @@ module OpenapiClient
       return data, status_code, headers
     end
 
-    # Saves a previously uploaded document as PNG.
+    # Saves a previously uploaded document as PNG, and sends the file data in a JSON-serialized object.
     # @param pdf_save_as_png_parameters [PdfSaveAsPNGParameters] A PdfSaveAsPNGParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [PdfSaveAsPNGResponse]
@@ -2256,7 +2318,7 @@ module OpenapiClient
       data
     end
 
-    # Saves a previously uploaded document as PNG.
+    # Saves a previously uploaded document as PNG, and sends the file data in a JSON-serialized object.
     # @param pdf_save_as_png_parameters [PdfSaveAsPNGParameters] A PdfSaveAsPNGParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [Array<(PdfSaveAsPNGResponse, Integer, Hash)>] PdfSaveAsPNGResponse data, response status code and response headers
@@ -2309,7 +2371,7 @@ module OpenapiClient
       return data, status_code, headers
     end
 
-    # Saves a previously uploaded document as PNG.
+    # Saves a previously uploaded document as PNG, and streams the file binary data to the response (this is the most efficient download method).
     # @param pdf_save_as_png_parameters [PdfSaveAsPNGParameters] A PdfSaveAsPNGParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [File]
@@ -2318,7 +2380,7 @@ module OpenapiClient
       data
     end
 
-    # Saves a previously uploaded document as PNG.
+    # Saves a previously uploaded document as PNG, and streams the file binary data to the response (this is the most efficient download method).
     # @param pdf_save_as_png_parameters [PdfSaveAsPNGParameters] A PdfSaveAsPNGParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [Array<(File, Integer, Hash)>] File data, response status code and response headers
@@ -2371,7 +2433,7 @@ module OpenapiClient
       return data, status_code, headers
     end
 
-    # Saves a previously uploaded document as TIFF.
+    # Saves a previously uploaded document as TIFF, and sends the file data in a JSON-serialized object.
     # @param pdf_save_as_tiff_parameters [PdfSaveAsTIFFParameters] A PdfSaveAsTIFFParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [PdfSaveAsTIFFResponse]
@@ -2380,7 +2442,7 @@ module OpenapiClient
       data
     end
 
-    # Saves a previously uploaded document as TIFF.
+    # Saves a previously uploaded document as TIFF, and sends the file data in a JSON-serialized object.
     # @param pdf_save_as_tiff_parameters [PdfSaveAsTIFFParameters] A PdfSaveAsTIFFParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [Array<(PdfSaveAsTIFFResponse, Integer, Hash)>] PdfSaveAsTIFFResponse data, response status code and response headers
@@ -2433,7 +2495,7 @@ module OpenapiClient
       return data, status_code, headers
     end
 
-    # Saves a previously uploaded document as TIFF.
+    # Saves a previously uploaded document as TIFF, and streams the file binary data to the response (this is the most efficient download method).
     # @param pdf_save_as_tiff_parameters [PdfSaveAsTIFFParameters] A PdfSaveAsTIFFParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [File]
@@ -2442,7 +2504,7 @@ module OpenapiClient
       data
     end
 
-    # Saves a previously uploaded document as TIFF.
+    # Saves a previously uploaded document as TIFF, and streams the file binary data to the response (this is the most efficient download method).
     # @param pdf_save_as_tiff_parameters [PdfSaveAsTIFFParameters] A PdfSaveAsTIFFParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [Array<(File, Integer, Hash)>] File data, response status code and response headers
@@ -2495,7 +2557,7 @@ module OpenapiClient
       return data, status_code, headers
     end
 
-    # Saves a previously uploaded document as multipage TIFF.
+    # Saves a previously uploaded document as multipage TIFF, and sends the file data in a JSON-serialized object.
     # @param pdf_save_as_tiff_multipage_parameters [PdfSaveAsTIFFMultipageParameters] A PdfSaveAsTIFFMultipageParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [PdfSaveAsTIFFMultipageResponse]
@@ -2504,7 +2566,7 @@ module OpenapiClient
       data
     end
 
-    # Saves a previously uploaded document as multipage TIFF.
+    # Saves a previously uploaded document as multipage TIFF, and sends the file data in a JSON-serialized object.
     # @param pdf_save_as_tiff_multipage_parameters [PdfSaveAsTIFFMultipageParameters] A PdfSaveAsTIFFMultipageParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [Array<(PdfSaveAsTIFFMultipageResponse, Integer, Hash)>] PdfSaveAsTIFFMultipageResponse data, response status code and response headers
@@ -2557,7 +2619,7 @@ module OpenapiClient
       return data, status_code, headers
     end
 
-    # Saves a previously uploaded document as multipage TIFF.
+    # Saves a previously uploaded document as multipage TIFF, and streams the file binary data to the response (this is the most efficient download method).
     # @param pdf_save_as_tiff_multipage_parameters [PdfSaveAsTIFFMultipageParameters] A PdfSaveAsTIFFMultipageParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [File]
@@ -2566,7 +2628,7 @@ module OpenapiClient
       data
     end
 
-    # Saves a previously uploaded document as multipage TIFF.
+    # Saves a previously uploaded document as multipage TIFF, and streams the file binary data to the response (this is the most efficient download method).
     # @param pdf_save_as_tiff_multipage_parameters [PdfSaveAsTIFFMultipageParameters] A PdfSaveAsTIFFMultipageParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [Array<(File, Integer, Hash)>] File data, response status code and response headers
@@ -2619,7 +2681,7 @@ module OpenapiClient
       return data, status_code, headers
     end
 
-    # Saves a previously uploaded document as PDF.
+    # Saves a previously uploaded document as PDF, and sends the file data in a JSON-serialized object.
     # @param pdf_save_document_parameters [PdfSaveDocumentParameters] A PdfSaveDocumentParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [PdfSaveDocumentResponse]
@@ -2628,7 +2690,7 @@ module OpenapiClient
       data
     end
 
-    # Saves a previously uploaded document as PDF.
+    # Saves a previously uploaded document as PDF, and sends the file data in a JSON-serialized object.
     # @param pdf_save_document_parameters [PdfSaveDocumentParameters] A PdfSaveDocumentParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [Array<(PdfSaveDocumentResponse, Integer, Hash)>] PdfSaveDocumentResponse data, response status code and response headers
@@ -2681,7 +2743,7 @@ module OpenapiClient
       return data, status_code, headers
     end
 
-    # Saves a previously uploaded document as PDF.
+    # Saves a previously uploaded document as PDF, and streams the file binary data to the response (this is the most efficient download method).
     # @param pdf_save_document_parameters [PdfSaveDocumentParameters] A PdfSaveDocumentParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [File]
@@ -2690,7 +2752,7 @@ module OpenapiClient
       data
     end
 
-    # Saves a previously uploaded document as PDF.
+    # Saves a previously uploaded document as PDF, and streams the file binary data to the response (this is the most efficient download method).
     # @param pdf_save_document_parameters [PdfSaveDocumentParameters] A PdfSaveDocumentParameters object specifying the parameters of the action.
     # @param [Hash] opts the optional parameters
     # @return [Array<(File, Integer, Hash)>] File data, response status code and response headers
